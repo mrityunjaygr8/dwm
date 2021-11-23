@@ -110,6 +110,7 @@ static Key keys[] = {
 
 	/* Firefox spawn keybind */
 	{ MODKEY,             		XK_b,      spawn,      	   {.v = firefox } },
+	{ MODKEY,             		XK_w,      spawn,      	   SHCMD("$HOME/wallpaper.sh") },
 	{ MODKEY|ControlMask|ShiftMask, XK_q,      spawn,      	   SHCMD("$HOME/powermenu.sh") },
 
 	TAGKEYS(                        XK_1,                      0)
