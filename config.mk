@@ -3,6 +3,8 @@ VERSION = 6.2
 
 # Customize below to fit your system
 
+WALINC= ${WAL_CACHE}
+
 # paths
 PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
@@ -21,7 +23,7 @@ FREETYPEINC = /usr/include/freetype2
 #FREETYPEINC = ${X11INC}/freetype2
 
 # includes and libs
-INCS = -I${X11INC} -I${FREETYPEINC}
+INCS = -I${X11INC} -I${FREETYPEINC} -I${WALINC}
 LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}
 
 # flags
