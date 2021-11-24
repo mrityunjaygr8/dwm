@@ -29,6 +29,7 @@ static const char *colors[][3]      = {
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 	[SchemeUrg]  = { col_gray4, col_cyan,  col_urgborder  },
+	[SchemeHid]  = { col_cyan,  col_gray1, col_cyan  },
 };
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
@@ -78,15 +79,21 @@ static const Layout layouts[] = {
 /* commands */
 static const char *termcmd[]  = { "alacritty", NULL };
 static const char *firefox[]  = { "firefox-developer-edition", NULL };
+static const char *vol_up[] = { "amixer", "-q", "sset", "Master", "5%+", NULL };
+static const char *vol_down[] = { "amixer", "-q", "sset", "Master", "5%-", NULL };
+static const char *vol_mute[] = { "amixer", "-q", "sset", "Master", "toggle", NULL };
 
 #include "shiftview.c"
+#include "X11/XF86keysym.h"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ShiftMask,             XK_b,      togglebar,      {0} },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_j,      focusstackvis,  {.i = +1 } },
+	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_j,      focusstackhid,  {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_k,      focusstackhid,  {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
@@ -107,11 +114,16 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	{ MODKEY,             		XK_Left,   shiftview,      {.i = -1 } },
 	{ MODKEY,             		XK_Right,  shiftview,      {.i = +1 } },
+	{ MODKEY,                       XK_s,      show,           {0} },
+	{ MODKEY,                       XK_h,      hide,           {0} },
 
 	/* Firefox spawn keybind */
 	{ MODKEY,             		XK_b,      spawn,      	   {.v = firefox } },
 	{ MODKEY,             		XK_w,      spawn,      	   SHCMD("$HOME/wallpaper.sh") },
 	{ MODKEY|ControlMask|ShiftMask, XK_q,      spawn,      	   SHCMD("$HOME/powermenu.sh") },
+	{ 0,				XF86XK_AudioLowerVolume, spawn, { .v = vol_down }},
+	{ 0,				XF86XK_AudioMute, spawn, { .v = vol_mute }},
+	{ 0,				XF86XK_AudioRaiseVolume, spawn, { .v = vol_up }},
 
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
@@ -131,6 +143,7 @@ static Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
+	{ ClkWinTitle,          0,              Button1,        togglewin,      {0} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
